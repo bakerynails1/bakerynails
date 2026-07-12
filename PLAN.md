@@ -166,24 +166,24 @@ Tareas adicionales de esta fase:
 
 ## 5. Fase 4 — Sitio de reservas (cliente)
 
-- [ ] Paso 1: formulario de nombre/teléfono/correo → crea o reutiliza `customer`.
-- [ ] Paso 2-3: selección de categoría → servicio, mostrando precio y (si aplica) tamaño S/M/L/XL.
-- [ ] Paso 4: lista de empleadas capacitadas para ese servicio (o "cualquiera disponible").
-- [ ] Paso 5: calendario/selector de horario usando `/api/availability`.
-- [ ] Paso 6: confirmación, llamada a `/api/appointments`, pantalla de éxito.
-- [ ] Responsivo para celular (la mayoría de las reservas probablemente entren desde el teléfono).
+- [x] Paso 1: formulario de nombre/teléfono/correo → crea o reutiliza `customer`.
+- [x] Paso 2-3: selección de categoría → servicio, mostrando precio y (si aplica) tamaño S/M/L/XL.
+- [x] Paso 4: lista de empleadas capacitadas para ese servicio (o "cualquiera disponible").
+- [x] Paso 5: calendario/selector de horario (llama a la lógica de disponibilidad directamente en el servidor, sin round-trip HTTP).
+- [x] Paso 6: confirmación, crea la cita (misma lógica que `/api/appointments`), pantalla de éxito.
+- [x] Responsivo para celular (layout de una columna, máx. ancho `max-w-md`).
 
 ---
 
 ## 6. Fase 5 — Panel de administrador (CRM)
 
-- [ ] Login (Supabase Auth) para el dueño/recepción.
-- [ ] `/admin/empleadas`: alta, edición, baja/desactivación de empleadas.
-- [ ] `/admin/servicios`: alta/edición/baja de categorías y servicios (nombre, precio, duración, tamaño si aplica).
-- [ ] `/admin/asignaciones`: matriz empleada × servicio (checkboxes) que escribe en `staff_services`.
-- [ ] `/admin/horarios`: horario semanal por empleada + excepciones puntuales.
-- [ ] `/admin/citas`: agenda del día/semana, filtrable por empleada, con acción de marcar completada/cancelada/no-show.
-- [ ] `/admin/reportes`: ingresos por servicio, por empleada, por periodo; conteo de citas por servicio.
+- [x] Login (Supabase Auth) para el dueño/recepción.
+- [x] `/admin/empleadas`: alta, edición, baja/desactivación de empleadas.
+- [x] `/admin/servicios`: alta/edición/baja de categorías y servicios (nombre, precio, duración, tamaño si aplica).
+- [x] `/admin/asignaciones`: matriz empleada × servicio (checkboxes) que escribe en `staff_services`.
+- [x] `/admin/horarios`: horario semanal por empleada + excepciones puntuales.
+- [x] `/admin/citas`: agenda del día, filtrable por empleada, con acción de marcar completada/cancelada/no-show.
+- [x] `/admin/reportes`: ingresos por servicio, por empleada, por periodo.
 
 ---
 
