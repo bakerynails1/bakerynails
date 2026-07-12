@@ -19,11 +19,11 @@ publicar solo. Todo se hace desde el navegador.
 2. Configura el build:
    - **Build command:** `npm run cf:build`
    - **Deploy command:** `npx wrangler deploy`
-   - (El nombre del worker sale de `wrangler.jsonc`: `bakery-nails`.)
+   - (El nombre del worker sale de `wrangler.jsonc`: `bakerynails`.)
 3. Agrega las **variables de entorno** (ver la sección de abajo). Marca como
    *Secret* las que dicen "secreta".
 4. Guarda y lanza el primer deploy. Al terminar te da una URL tipo
-   `https://bakery-nails.<tu-cuenta>.workers.dev`.
+   `https://bakerynails.<tu-cuenta>.workers.dev`.
 
 ### Alternativa por línea de comandos (deploy manual)
 
