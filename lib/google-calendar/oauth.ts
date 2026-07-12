@@ -1,19 +1,14 @@
 import "server-only";
+import { getEnv } from "@/lib/env";
 
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const SCOPE = "https://www.googleapis.com/auth/calendar";
 
-function requiredEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) throw new Error(`Falta la variable de entorno ${name}`);
-  return value;
-}
-
 export function getGoogleAuthUrl(state: string): string {
   const params = new URLSearchParams({
-    client_id: requiredEnv("GOOGLE_CLIENT_ID"),
-    redirect_uri: requiredEnv("GOOGLE_REDIRECT_URI"),
+    client_id: getEnv("GOOGLE_CLIENT_ID"),
+    redirect_uri: getEnv("GOOGLE_REDIRECT_URI"),
     response_type: "code",
     access_type: "offline",
     prompt: "consent",
@@ -35,9 +30,9 @@ export async function exchangeCodeForTokens(code: string): Promise<GoogleTokens>
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
       code,
-      client_id: requiredEnv("GOOGLE_CLIENT_ID"),
-      client_secret: requiredEnv("GOOGLE_CLIENT_SECRET"),
-      redirect_uri: requiredEnv("GOOGLE_REDIRECT_URI"),
+      client_id: getEnv("GOOGLE_CLIENT_ID"),
+      client_secret: getEnv("GOOGLE_CLIENT_SECRET"),
+      redirect_uri: getEnv("GOOGLE_REDIRECT_URI"),
       grant_type: "authorization_code",
     }),
   });
@@ -51,8 +46,8 @@ export async function refreshAccessToken(refreshToken: string): Promise<string> 
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
       refresh_token: refreshToken,
-      client_id: requiredEnv("GOOGLE_CLIENT_ID"),
-      client_secret: requiredEnv("GOOGLE_CLIENT_SECRET"),
+      client_id: getEnv("GOOGLE_CLIENT_ID"),
+      client_secret: getEnv("GOOGLE_CLIENT_SECRET"),
       grant_type: "refresh_token",
     }),
   });
