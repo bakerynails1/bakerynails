@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createService, updateService, type ServiceFormState } from "./actions";
+import { Button, Field, Input, Select, ErrorText } from "@/components/admin/ui";
 
 const initialState: ServiceFormState = {};
 
@@ -27,16 +28,10 @@ export function ServiceForm({ categories, service }: ServiceFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="flex flex-wrap items-end gap-2">
+    <form action={formAction} className="flex flex-wrap items-end gap-3">
       {service && <input type="hidden" name="id" value={service.id} />}
-      <div>
-        <label className="block text-xs text-neutral-500">Categoría</label>
-        <select
-          name="category_id"
-          defaultValue={service?.category_id}
-          required
-          className="rounded-md border border-neutral-300 px-2 py-1 text-sm"
-        >
+      <Field label="Categoría" className="min-w-[9rem]">
+        <Select name="category_id" defaultValue={service?.category_id} required>
           <option value="" disabled>
             Elige...
           </option>
@@ -45,62 +40,37 @@ export function ServiceForm({ categories, service }: ServiceFormProps) {
               {c.name}
             </option>
           ))}
-        </select>
-      </div>
-      <div>
-        <label className="block text-xs text-neutral-500">Nombre</label>
-        <input
-          name="name"
-          defaultValue={service?.name}
-          required
-          className="rounded-md border border-neutral-300 px-2 py-1 text-sm"
-        />
-      </div>
-      <div>
-        <label className="block text-xs text-neutral-500">Precio (MXN)</label>
-        <input
+        </Select>
+      </Field>
+      <Field label="Nombre" className="min-w-[12rem] flex-1">
+        <Input name="name" defaultValue={service?.name} required placeholder="Ej. Gel Manos" />
+      </Field>
+      <Field label="Precio (MXN)" className="w-28">
+        <Input
           name="price"
           type="number"
           step="0.01"
           min="0"
           defaultValue={service ? (service.price_cents / 100).toFixed(2) : undefined}
           required
-          className="w-24 rounded-md border border-neutral-300 px-2 py-1 text-sm"
         />
-      </div>
-      <div>
-        <label className="block text-xs text-neutral-500">Duración (min)</label>
-        <input
-          name="duration_minutes"
-          type="number"
-          min="1"
-          defaultValue={service?.duration_minutes}
-          required
-          className="w-20 rounded-md border border-neutral-300 px-2 py-1 text-sm"
-        />
-      </div>
-      <div>
-        <label className="block text-xs text-neutral-500">Tamaño (opcional)</label>
-        <select
-          name="size"
-          defaultValue={service?.size ?? ""}
-          className="rounded-md border border-neutral-300 px-2 py-1 text-sm"
-        >
+      </Field>
+      <Field label="Duración (min)" className="w-24">
+        <Input name="duration_minutes" type="number" min="1" defaultValue={service?.duration_minutes} required />
+      </Field>
+      <Field label="Tamaño" className="w-24">
+        <Select name="size" defaultValue={service?.size ?? ""}>
           <option value="">N/A</option>
           <option value="S">S</option>
           <option value="M">M</option>
           <option value="L">L</option>
           <option value="XL">XL</option>
-        </select>
-      </div>
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-brand-500 px-3 py-1.5 text-sm text-white disabled:opacity-50"
-      >
-        {pending ? "Guardando..." : service ? "Guardar" : "Agregar servicio"}
-      </button>
-      {state.error && <p className="w-full text-sm text-red-600">{state.error}</p>}
+        </Select>
+      </Field>
+      <Button type="submit" variant="primary" pending={pending}>
+        {service ? "Guardar" : "Agregar servicio"}
+      </Button>
+      <ErrorText>{state.error}</ErrorText>
     </form>
   );
 }

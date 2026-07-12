@@ -23,7 +23,7 @@ export function AssignmentCheckbox({ staffId, serviceId, defaultChecked }: Assig
           await setAssignment(staffId, serviceId, checked);
         });
       }}
-      className="h-4 w-4"
+      className="h-4 w-4 rounded border-line accent-brand-500 disabled:opacity-50"
     />
   );
 }

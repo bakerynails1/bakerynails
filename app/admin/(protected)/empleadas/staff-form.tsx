@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createStaff, updateStaff, type StaffFormState } from "./actions";
+import { Button, Field, Input, ErrorText } from "@/components/admin/ui";
 
 const initialState: StaffFormState = {};
 
@@ -14,33 +15,18 @@ export function StaffForm({ staff }: StaffFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="flex flex-wrap items-end gap-2">
+    <form action={formAction} className="flex flex-wrap items-end gap-3">
       {staff && <input type="hidden" name="id" value={staff.id} />}
-      <div>
-        <label className="block text-xs text-neutral-500">Nombre</label>
-        <input
-          name="name"
-          defaultValue={staff?.name}
-          required
-          className="rounded-md border border-neutral-300 px-2 py-1 text-sm"
-        />
-      </div>
-      <div>
-        <label className="block text-xs text-neutral-500">Teléfono</label>
-        <input
-          name="phone"
-          defaultValue={staff?.phone ?? ""}
-          className="rounded-md border border-neutral-300 px-2 py-1 text-sm"
-        />
-      </div>
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-brand-500 px-3 py-1.5 text-sm text-white disabled:opacity-50"
-      >
-        {pending ? "Guardando..." : staff ? "Guardar" : "Agregar"}
-      </button>
-      {state.error && <p className="w-full text-sm text-red-600">{state.error}</p>}
+      <Field label="Nombre" className="min-w-[10rem] flex-1">
+        <Input name="name" defaultValue={staff?.name} required placeholder="Ej. Daniela" />
+      </Field>
+      <Field label="Teléfono" className="min-w-[10rem] flex-1">
+        <Input name="phone" defaultValue={staff?.phone ?? ""} placeholder="Opcional" />
+      </Field>
+      <Button type="submit" variant="primary" pending={pending}>
+        {staff ? "Guardar" : "Agregar"}
+      </Button>
+      <ErrorText>{state.error}</ErrorText>
     </form>
   );
 }
