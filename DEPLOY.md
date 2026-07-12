@@ -18,8 +18,14 @@ publicar solo. Todo se hace desde el navegador.
    elige `bakerynails1/bakerynails`).
 2. Configura el build:
    - **Build command:** `npm run cf:build`
-   - **Deploy command:** `npx wrangler deploy`
+   - **Deploy command:** `npx wrangler deploy --keep-vars`
    - (El nombre del worker sale de `wrangler.jsonc`: `bakerynails`.)
+   - ⚠️ **El `--keep-vars` es obligatorio.** Sin esa bandera, `wrangler deploy`
+     **borra todas las variables de entorno en cada publicación** (es el
+     comportamiento por defecto de Wrangler cuando las variables se
+     configuraron desde el dashboard en vez del archivo de configuración).
+     Causó horas de "supabaseKey is required" en producción — ver
+     [Wrangler CHANGELOG / `--keep-vars`](https://developers.cloudflare.com/workers/wrangler/commands/#deploy).
 3. Agrega las **variables de entorno** (ver la sección de abajo). Marca como
    *Secret* las que dicen "secreta".
 4. Guarda y lanza el primer deploy. Al terminar te da una URL tipo
