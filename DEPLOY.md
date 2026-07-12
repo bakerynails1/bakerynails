@@ -72,6 +72,13 @@ GOOGLE_REDIRECT_URI=https://TU-DOMINIO/api/google-calendar/callback
 3. Entra al panel publicado (`/admin/configuracion`) y **vuelve a conectar
    Google Calendar** para que el token quede ligado al dominio de producción.
 
+## Si algún día vuelve a fallar "supabaseKey is required" en producción
+
+Ese error significa que las variables de entorno no le están llegando al
+Worker (aunque se vean bien en el dashboard). Revisa primero que el
+**Deploy command** siga siendo `npx wrangler deploy --keep-vars` — sin esa
+bandera, Wrangler borra todas las variables en cada publicación.
+
 ## Dominio propio (opcional)
 
 En el worker, pestaña **Settings → Domains & Routes**, puedes conectar un
