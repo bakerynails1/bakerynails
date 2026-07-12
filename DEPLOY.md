@@ -21,18 +21,29 @@ publicar solo. Todo se hace desde el navegador.
    - **Deploy command:** `npx wrangler deploy --keep-vars`
    - **Version command:** `npx wrangler versions upload --keep-vars`
    - (El nombre del worker sale de `wrangler.jsonc`: `bakerynails`.)
-   - ⚠️ **El `--keep-vars` es obligatorio en AMBOS comandos.** Sin esa bandera,
-     Wrangler **borra todas las variables de entorno en cada publicación** (es
-     el comportamiento por defecto cuando las variables se configuraron desde
-     el dashboard en vez del archivo de configuración). Los deploys
-     automáticos por `git push` usan el **Version command**, no el Deploy
-     command — hay que ponerle la bandera a los dos. Causó horas de
-     "supabaseKey is required" en producción — ver
-     [Wrangler docs / `--keep-vars`](https://developers.cloudflare.com/workers/wrangler/commands/#deploy).
-3. Agrega las **variables de entorno** (ver la sección de abajo). Marca como
-   *Secret* las que dicen "secreta".
+   - ⚠️ El `--keep-vars` va en AMBOS comandos, como salvaguarda para que
+     futuros `git push` no borren las variables de la siguiente sección.
+3. **Las variables de entorno reales van en OTRO lugar** (ver ⚠️ abajo), no
+   en el panel de este paso 2 — ese panel solo alimenta el *build*, no el
+   Worker en producción.
 4. Guarda y lanza el primer deploy. Al terminar te da una URL tipo
    `https://bakerynails.<tu-cuenta>.workers.dev`.
+
+> ⚠️ **Trampa importante de Cloudflare — nos costó varias horas depurar esto:**
+> Hay **dos secciones distintas** que se llaman parecido y es fácil confundirlas:
+>
+> 1. **"Variables and Secrets" dentro del asistente de importación / Settings → Build** —
+>    dice "Customize the environment variables **sent to your build**". Esto
+>    **solo** las pasa al comando `npm run cf:build`, nunca llegan al Worker
+>    cuando ya está sirviendo tráfico real.
+> 2. **Settings → (pestaña del Worker, no la de Build) → "Variables and Secrets"** —
+>    dice "Define the environment variables and secrets for your Worker
+>    **used at runtime**". **Esta es la correcta.** Ahí van las 6 variables
+>    para que el sitio funcione de verdad.
+>
+> Si el sitio publicado da error "supabaseKey is required" o páginas en
+> blanco/500 en cualquier ruta que toque la base de datos, casi seguro las
+> variables están en la sección 1 en vez de la 2.
 
 ### Alternativa por línea de comandos (deploy manual)
 
@@ -78,9 +89,13 @@ GOOGLE_REDIRECT_URI=https://TU-DOMINIO/api/google-calendar/callback
 ## Si algún día vuelve a fallar "supabaseKey is required" en producción
 
 Ese error significa que las variables de entorno no le están llegando al
-Worker (aunque se vean bien en el dashboard). Revisa primero que el
-**Deploy command** siga siendo `npx wrangler deploy --keep-vars` — sin esa
-bandera, Wrangler borra todas las variables en cada publicación.
+Worker. Revisa, en este orden:
+
+1. **Settings → (Worker) → Variables and Secrets** (la de runtime, no la de
+   Build) — confirma que las 6 sigan ahí.
+2. Si ahí siguen y el error volvió después de un `git push`, revisa que
+   **Deploy command** y **Version command** sigan teniendo `--keep-vars` —
+   sin esa bandera, Wrangler las borra en cada publicación.
 
 ## Dominio propio (opcional)
 

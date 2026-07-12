@@ -189,12 +189,12 @@ Tareas adicionales de esta fase:
 
 ## 7. Fase 6 — Deploy
 
-- [x] Proyecto preparado para Cloudflare Workers con el adaptador vigente `@opennextjs/cloudflare` (`wrangler.jsonc`, `open-next.config.ts`, scripts `cf:*`). El build para Cloudflare se genera correctamente. Ver `DEPLOY.md`.
-- [ ] Conectar el repo a Cloudflare (Workers Builds) desde el dashboard — pendiente: requiere la cuenta de Cloudflare del usuario.
-- [ ] Variables de entorno en Cloudflare: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (secreta), `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (secreta), `GOOGLE_REDIRECT_URI` (con el dominio de producción).
-- [ ] Actualizar el URI de redirección OAuth en Google + reconectar Google Calendar desde el panel publicado.
+- [x] Proyecto preparado para Cloudflare Workers con el adaptador vigente `@opennextjs/cloudflare` (`wrangler.jsonc`, `open-next.config.ts`, scripts `cf:*`). Ver `DEPLOY.md`.
+- [x] Repo conectado a Cloudflare (Workers Builds) — publicado en `https://bakerynails.bakerynails1.workers.dev`.
+- [x] Variables de entorno en Cloudflare, en la sección correcta de runtime (ver ⚠️ en `DEPLOY.md` — hay una trampa con una sección de variables que parece la correcta pero solo aplica al build). Verificado con una reserva de prueba real contra el sitio publicado.
+- [ ] Actualizar `GOOGLE_REDIRECT_URI` al dominio real de producción (hoy sigue con un valor placeholder) + el URI de redirección correspondiente en Google Cloud Console + reconectar Google Calendar desde `/admin/configuracion` en el sitio publicado.
 - [ ] Dominio propio conectado (opcional para el MVP).
-- [ ] Prueba end-to-end: reservar una cita de prueba y confirmar que aparece en Google Calendar con el color correcto.
+- [ ] Prueba end-to-end: reservar una cita de prueba y confirmar que aparece en Google Calendar con el color correcto (pendiente de la conexión de Google Calendar en producción).
 
 Nota: el `proxy.ts` (middleware) se retiró porque Next.js 16 lo fuerza al runtime de Node.js, que Cloudflare no soporta. La protección de `/admin` la garantiza el layout (`requireBusinessSession`) y el redireccionamiento del login.
 
