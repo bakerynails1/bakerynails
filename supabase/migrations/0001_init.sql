@@ -219,7 +219,7 @@ insert into businesses (name, slug, timezone)
 values ('Bakery Nails', 'bakery-nails', 'America/Mazatlan');
 
 insert into service_categories (business_id, name, sort_order)
-select id, name, sort_order
+select businesses.id, c.name, c.sort_order
 from businesses, (values
   ('Manos', 1),
   ('Pies', 2),
