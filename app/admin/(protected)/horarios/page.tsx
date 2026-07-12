@@ -57,7 +57,7 @@ export default async function HorariosPage({
             key={s.id}
             href={`/admin/horarios?staff=${s.id}`}
             className={`rounded-md px-3 py-1.5 text-sm ${
-              s.id === selectedStaffId ? "bg-neutral-900 text-white" : "bg-white text-neutral-700 border border-neutral-200"
+              s.id === selectedStaffId ? "bg-brand-500 text-white" : "bg-white text-neutral-700 border border-neutral-200"
             }`}
           >
             {s.name}

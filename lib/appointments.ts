@@ -1,6 +1,7 @@
 import "server-only";
 import { DateTime } from "luxon";
 import { createAdminClient } from "./supabase/admin";
+import { syncAppointmentToGoogle } from "./google-calendar/sync";
 
 const EXCLUSION_VIOLATION = "23P01";
 
@@ -121,6 +122,8 @@ export async function createAppointment(input: CreateAppointmentInput) {
     throw new AppointmentError(insertError.message, 500);
   }
 
+  await syncAppointmentToGoogle(appointment.id);
+
   return appointment;
 }
 
@@ -147,5 +150,8 @@ export async function cancelAppointment(appointmentId: string) {
     .single();
 
   if (updateError) throw new AppointmentError(updateError.message, 500);
+
+  await syncAppointmentToGoogle(appointmentId);
+
   return updated;
 }

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireBusinessSession } from "@/lib/admin/auth";
 import { createClient } from "@/lib/supabase/server";
+import { syncAppointmentToGoogle } from "@/lib/google-calendar/sync";
 
 const statusSchema = z.enum(["completed", "cancelled", "no_show", "confirmed"]);
 
@@ -15,5 +16,19 @@ export async function markAppointmentStatus(formData: FormData) {
 
   const supabase = await createClient();
   await supabase.from("appointments").update({ status: parsedStatus.data }).eq("id", id);
+
+  if (parsedStatus.data === "cancelled") {
+    await syncAppointmentToGoogle(id);
+  }
+
+  revalidatePath("/admin/citas");
+}
+
+export async function retryGoogleSync(formData: FormData) {
+  await requireBusinessSession();
+  const id = formData.get("id");
+  if (typeof id !== "string") return;
+
+  await syncAppointmentToGoogle(id);
   revalidatePath("/admin/citas");
 }

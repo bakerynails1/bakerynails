@@ -86,7 +86,7 @@ export default async function ReportesPage({
             className="rounded-md border border-neutral-300 px-2 py-1 text-sm"
           />
         </div>
-        <button type="submit" className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm text-white">
+        <button type="submit" className="rounded-md bg-brand-500 px-3 py-1.5 text-sm text-white">
           Filtrar
         </button>
       </form>

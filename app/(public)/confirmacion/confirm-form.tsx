@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { confirmBooking, type ConfirmState } from "./actions";
+import { btnPrimary } from "@/components/ui";
 
 const initialState: ConfirmState = {};
 
@@ -26,14 +27,12 @@ export function ConfirmForm({ serviceId, staffId, startsAt, name, phone, email }
       <input type="hidden" name="phone" value={phone} />
       {email && <input type="hidden" name="email" value={email} />}
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && (
+        <p className="rounded-xl bg-red-50 px-4 py-2 text-sm text-red-600">{state.error}</p>
+      )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-      >
-        {pending ? "Reservando..." : "Confirmar cita"}
+      <button type="submit" disabled={pending} className={`${btnPrimary} w-full`}>
+        {pending ? "Reservando..." : "Confirmar cita 🤍"}
       </button>
     </form>
   );

@@ -2,6 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DateTime } from "luxon";
 import { getAppointmentSummary, getBusiness } from "@/lib/public/catalog";
+import { BrandLogo } from "@/components/brand-logo";
+import { btnPrimary } from "@/components/ui";
+import { formatLongDateTime } from "@/lib/format";
 
 function formatPrice(cents: number) {
   return (cents / 100).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
@@ -21,37 +24,47 @@ export default async function ExitoPage({ searchParams }: { searchParams: Promis
   const customer = appointment.customer as unknown as { name: string } | null;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-4 py-8 text-center">
-      <div className="text-4xl">✅</div>
-      <h1 className="mt-4 text-xl font-semibold text-neutral-900">¡Cita confirmada!</h1>
-      <p className="mt-1 text-sm text-neutral-500">Te esperamos, {customer?.name}.</p>
+    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center px-5 py-10 text-center">
+      <span className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-100">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" className="text-brand-600">
+          <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
 
-      <div className="mt-6 w-full space-y-2 rounded-lg border border-neutral-200 bg-white p-4 text-left text-sm">
-        <p>
-          <span className="text-neutral-500">Servicio:</span>{" "}
-          <span className="font-medium text-neutral-900">
+      <h1 className="mt-5 font-serif text-2xl font-semibold text-ink">¡Cita agendada! 🤍</h1>
+      <p className="mt-1 text-ink-soft">Te esperamos, {customer?.name}.</p>
+
+      <div className="mt-6 w-full space-y-2 rounded-3xl border border-line bg-white p-6 text-left shadow-sm shadow-brand-100">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-ink-soft">Servicio</span>
+          <span className="text-sm font-medium text-ink">
             {service?.name}
-            {service?.size ? ` (${service.size})` : ""}
+            {service?.size ? ` · ${service.size}` : ""}
           </span>
-        </p>
-        <p>
-          <span className="text-neutral-500">Empleada:</span> <span className="font-medium text-neutral-900">{staff?.name}</span>
-        </p>
-        <p>
-          <span className="text-neutral-500">Cuándo:</span>{" "}
-          <span className="font-medium text-neutral-900">{start.setLocale("es").toFormat("cccc d 'de' LLLL, HH:mm")}</span>
-        </p>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-ink-soft">Artista</span>
+          <span className="text-sm font-medium text-ink">{staff?.name}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-ink-soft">Cuándo</span>
+          <span className="text-right text-sm font-medium text-ink">{formatLongDateTime(start)}</span>
+        </div>
         {service && (
-          <p>
-            <span className="text-neutral-500">Precio:</span>{" "}
-            <span className="font-medium text-neutral-900">{formatPrice(service.price_cents)}</span>
-          </p>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-ink-soft">Precio</span>
+            <span className="text-sm font-medium text-brand-600">{formatPrice(service.price_cents)}</span>
+          </div>
         )}
       </div>
 
-      <Link href="/" className="mt-6 text-sm text-neutral-600 underline">
+      <Link href="/" className={`${btnPrimary} mt-8`}>
         Agendar otra cita
       </Link>
+
+      <div className="mt-10 opacity-70">
+        <BrandLogo size="sm" />
+      </div>
     </main>
   );
 }

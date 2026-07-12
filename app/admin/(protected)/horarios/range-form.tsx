@@ -24,7 +24,7 @@ export function RangeForm({ staffId, weekday }: { staffId: string; weekday: numb
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-neutral-900 px-2 py-1 text-xs text-white disabled:opacity-50"
+        className="rounded-md bg-brand-500 px-2 py-1 text-xs text-white disabled:opacity-50"
       >
         {pending ? "..." : `Agregar a ${WEEKDAY_LABELS[weekday]}`}
       </button>

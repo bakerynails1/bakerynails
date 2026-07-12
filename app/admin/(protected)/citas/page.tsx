@@ -2,7 +2,8 @@ import Link from "next/link";
 import { DateTime } from "luxon";
 import { requireBusinessSession } from "@/lib/admin/auth";
 import { createClient } from "@/lib/supabase/server";
-import { markAppointmentStatus } from "./actions";
+import { markAppointmentStatus, retryGoogleSync } from "./actions";
+import { formatLongDate } from "@/lib/format";
 
 const STATUS_LABELS: Record<string, string> = {
   confirmed: "Confirmada",
@@ -54,7 +55,7 @@ export default async function CitasPage({
   let query = supabase
     .from("appointments")
     .select(
-      "id, starts_at, ends_at, status, service:services(name, price_cents), staff:staff(name), customer:customers(name, phone)"
+      "id, starts_at, ends_at, status, google_sync_pending, service:services(name, price_cents), staff:staff(name), customer:customers(name, phone)"
     )
     .eq("business_id", session.businessId)
     .gte("starts_at", dayStart.toUTC().toISO()!)
@@ -79,9 +80,7 @@ export default async function CitasPage({
         <Link href={`/admin/citas?date=${prevDate}${staffQuery}`} className="rounded-md border border-neutral-200 bg-white px-3 py-1.5 text-sm">
           ← Anterior
         </Link>
-        <span className="text-sm font-medium text-neutral-900">
-          {selectedDate.setLocale("es").toFormat("cccc d 'de' LLLL")}
-        </span>
+        <span className="text-sm font-medium text-neutral-900">{formatLongDate(selectedDate)}</span>
         <Link href={`/admin/citas?date=${nextDate}${staffQuery}`} className="rounded-md border border-neutral-200 bg-white px-3 py-1.5 text-sm">
           Siguiente →
         </Link>
@@ -90,7 +89,7 @@ export default async function CitasPage({
       <div className="mt-3 flex flex-wrap gap-2">
         <Link
           href={`/admin/citas?date=${selectedDate.toFormat("yyyy-MM-dd")}`}
-          className={`rounded-md px-3 py-1 text-sm ${!staffParam ? "bg-neutral-900 text-white" : "bg-white border border-neutral-200 text-neutral-700"}`}
+          className={`rounded-md px-3 py-1 text-sm ${!staffParam ? "bg-brand-500 text-white" : "bg-white border border-neutral-200 text-neutral-700"}`}
         >
           Todas
         </Link>
@@ -98,7 +97,7 @@ export default async function CitasPage({
           <Link
             key={s.id}
             href={`/admin/citas?date=${selectedDate.toFormat("yyyy-MM-dd")}&staff=${s.id}`}
-            className={`rounded-md px-3 py-1 text-sm ${staffParam === s.id ? "bg-neutral-900 text-white" : "bg-white border border-neutral-200 text-neutral-700"}`}
+            className={`rounded-md px-3 py-1 text-sm ${staffParam === s.id ? "bg-brand-500 text-white" : "bg-white border border-neutral-200 text-neutral-700"}`}
           >
             {s.name}
           </Link>
@@ -129,6 +128,20 @@ export default async function CitasPage({
                   {STATUS_LABELS[appt.status] ?? appt.status}
                 </span>
               </div>
+
+              {appt.google_sync_pending && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="rounded bg-orange-100 px-2 py-0.5 text-xs text-orange-700">
+                    Pendiente de sincronizar con Google Calendar
+                  </span>
+                  <form action={retryGoogleSync}>
+                    <input type="hidden" name="id" value={appt.id} />
+                    <button type="submit" className="text-xs text-neutral-500 underline">
+                      Reintentar
+                    </button>
+                  </form>
+                </div>
+              )}
 
               {appt.status === "confirmed" && (
                 <div className="mt-3 flex gap-2">

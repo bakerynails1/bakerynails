@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { DateTime } from "luxon";
 import { getBusiness, getService, getStaffMember } from "@/lib/public/catalog";
 import { getAvailability } from "@/lib/availability";
+import { StepHeader } from "@/components/step-header";
+import { formatLongDate } from "@/lib/format";
 
 function contactQs(name: string, phone: string, email?: string) {
   return `name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}${email ? `&email=${encodeURIComponent(email)}` : ""}`;
@@ -67,47 +69,59 @@ export default async function HorarioPage({
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-md px-4 py-8">
-      <h1 className="text-xl font-semibold text-neutral-900">Elige horario</h1>
-      <p className="mt-1 text-sm text-neutral-500">
-        {service.name} · {service.duration_minutes} min
-      </p>
+    <main className="mx-auto min-h-screen w-full max-w-md px-5 py-8">
+      <StepHeader
+        step={3}
+        title="Fecha y hora"
+        subtitle={`${service.name} · ${service.duration_minutes} min`}
+        backHref={`/empleada?service=${serviceId}&${contact}`}
+      />
 
-      <div className="mt-4 flex items-center justify-between">
+      <div className="flex items-center justify-between rounded-2xl border border-line bg-white p-2 shadow-sm shadow-brand-100/40">
         {canGoPrev ? (
           <Link
             href={`/horario?service=${serviceId}&staff=${staffParam}&${contact}&date=${prevDate}`}
-            className="text-sm text-neutral-600 underline"
+            aria-label="Día anterior"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-brand-600 transition hover:bg-brand-100"
           >
-            ← Anterior
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </Link>
         ) : (
-          <span />
+          <span className="h-9 w-9" />
         )}
-        <span className="text-sm font-medium text-neutral-900">
-          {selectedDate.setLocale("es").toFormat("cccc d 'de' LLLL")}
+        <span className="text-center text-sm font-semibold text-ink">
+          {formatLongDate(selectedDate)}
         </span>
         <Link
           href={`/horario?service=${serviceId}&staff=${staffParam}&${contact}&date=${nextDate}`}
-          className="text-sm text-neutral-600 underline"
+          aria-label="Día siguiente"
+          className="flex h-9 w-9 items-center justify-center rounded-full text-brand-600 transition hover:bg-brand-100"
         >
-          Siguiente →
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </Link>
       </div>
 
-      <div className="mt-6 grid grid-cols-3 gap-2">
+      <div className="mt-5 grid grid-cols-3 gap-2.5">
         {sortedSlots.map(([iso, who]) => (
           <Link
             key={iso}
             href={confirmHref(iso, who.staffId)}
-            className="rounded-md border border-neutral-200 bg-white py-2 text-center text-sm hover:border-neutral-400"
+            className="rounded-xl border border-line bg-white py-2.5 text-center text-sm font-medium text-ink transition hover:border-brand-400 hover:bg-brand-50"
           >
             {DateTime.fromISO(iso).setZone(timezone).toFormat("HH:mm")}
           </Link>
         ))}
       </div>
       {sortedSlots.length === 0 && (
-        <p className="mt-6 text-sm text-neutral-500">Sin horarios disponibles este día. Prueba otro día.</p>
+        <div className="mt-6 rounded-2xl border border-line bg-white p-6 text-center text-sm text-ink-soft">
+          Sin horarios disponibles este día.
+          <br />
+          Prueba con otro día. 🌸
+        </div>
       )}
     </main>
   );

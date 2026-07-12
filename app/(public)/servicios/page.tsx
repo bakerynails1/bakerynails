@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getBusiness, getCategoriesWithServices } from "@/lib/public/catalog";
+import { StepHeader } from "@/components/step-header";
 
 function formatPrice(cents: number) {
   return (cents / 100).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
@@ -16,43 +17,46 @@ export default async function ServiciosPage({
 
   const business = await getBusiness();
   if (!business) {
-    return <main className="p-6 text-sm text-neutral-500">El negocio no está configurado todavía.</main>;
+    return <main className="mx-auto max-w-md p-6 text-sm text-ink-soft">El negocio no está configurado todavía.</main>;
   }
 
   const categories = await getCategoriesWithServices(business.id);
   const contactQs = `name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}${email ? `&email=${encodeURIComponent(email)}` : ""}`;
 
   return (
-    <main className="mx-auto min-h-screen max-w-md px-4 py-8">
-      <h1 className="text-xl font-semibold text-neutral-900">Elige un servicio</h1>
-      <p className="mt-1 text-sm text-neutral-500">Hola {name}, ¿qué te gustaría agendar?</p>
+    <main className="mx-auto min-h-screen w-full max-w-md px-5 py-8">
+      <StepHeader step={1} title="Elige tu servicio" subtitle={`Hola ${name}, ¿qué te consentimos hoy?`} backHref={`/?${contactQs}`} />
 
-      <div className="mt-6 space-y-6">
+      <div className="space-y-6">
         {categories.map((category) => (
           <section key={category.id}>
-            <h2 className="mb-2 text-sm font-semibold text-neutral-700">{category.name}</h2>
+            <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-[0.15em] text-brand-500">{category.name}</h2>
             <div className="space-y-2">
               {category.services.map((service) => (
                 <Link
                   key={service.id}
                   href={`/empleada?service=${service.id}&${contactQs}`}
-                  className="block rounded-lg border border-neutral-200 bg-white p-4 hover:border-neutral-400"
+                  className="flex items-center justify-between rounded-2xl border border-line bg-white p-4 shadow-sm shadow-brand-100/40 transition hover:border-brand-300 hover:shadow-md"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-neutral-900">
+                  <div>
+                    <p className="font-medium text-ink">
                       {service.name}
-                      {service.size ? ` (${service.size})` : ""}
-                    </span>
-                    <span className="text-neutral-500">{formatPrice(service.price_cents)}</span>
+                      {service.size ? <span className="text-ink-soft"> · {service.size}</span> : ""}
+                    </p>
+                    <p className="text-sm text-ink-soft">
+                      {formatPrice(service.price_cents)} · {service.duration_minutes} min
+                    </p>
                   </div>
-                  <p className="text-sm text-neutral-500">{service.duration_minutes} min</p>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 text-brand-400">
+                    <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                 </Link>
               ))}
-              {category.services.length === 0 && <p className="text-sm text-neutral-400">Sin servicios disponibles.</p>}
+              {category.services.length === 0 && <p className="px-1 text-sm text-ink-soft/70">Sin servicios disponibles.</p>}
             </div>
           </section>
         ))}
-        {categories.length === 0 && <p className="text-sm text-neutral-500">Todavía no hay servicios configurados.</p>}
+        {categories.length === 0 && <p className="text-sm text-ink-soft">Todavía no hay servicios configurados.</p>}
       </div>
     </main>
   );
