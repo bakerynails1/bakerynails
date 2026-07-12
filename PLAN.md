@@ -189,10 +189,14 @@ Tareas adicionales de esta fase:
 
 ## 7. Fase 6 — Deploy
 
-- [ ] Conectar el repo a Cloudflare Pages (build de Next.js con `@cloudflare/next-on-pages` o adaptador equivalente vigente).
-- [ ] Variables de entorno en Cloudflare Pages: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (solo en funciones server-side), `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`.
+- [x] Proyecto preparado para Cloudflare Workers con el adaptador vigente `@opennextjs/cloudflare` (`wrangler.jsonc`, `open-next.config.ts`, scripts `cf:*`). El build para Cloudflare se genera correctamente. Ver `DEPLOY.md`.
+- [ ] Conectar el repo a Cloudflare (Workers Builds) desde el dashboard — pendiente: requiere la cuenta de Cloudflare del usuario.
+- [ ] Variables de entorno en Cloudflare: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (secreta), `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (secreta), `GOOGLE_REDIRECT_URI` (con el dominio de producción).
+- [ ] Actualizar el URI de redirección OAuth en Google + reconectar Google Calendar desde el panel publicado.
 - [ ] Dominio propio conectado (opcional para el MVP).
 - [ ] Prueba end-to-end: reservar una cita de prueba y confirmar que aparece en Google Calendar con el color correcto.
+
+Nota: el `proxy.ts` (middleware) se retiró porque Next.js 16 lo fuerza al runtime de Node.js, que Cloudflare no soporta. La protección de `/admin` la garantiza el layout (`requireBusinessSession`) y el redireccionamiento del login.
 
 ---
 
