@@ -149,9 +149,9 @@ Tareas adicionales de esta fase:
 
 ## 3. Fase 2 — Lógica de disponibilidad (backend)
 
-- [ ] Endpoint `GET /api/availability?service_id=&date=` que devuelva, para el servicio elegido, la lista de empleadas capacitadas (`staff_services`) y sus huecos libres ese día, cruzando `staff_schedules`, `staff_schedule_exceptions` y `appointments` ya guardadas (no se usa Google Calendar aquí — ver sección 8.3 de la propuesta de arquitectura).
-- [ ] Endpoint `POST /api/appointments` que valide que el huequito sigue libre (evitar condición de carrera de doble reserva), inserte la cita, y dispare la creación del evento en Google Calendar.
-- [ ] Endpoint `POST /api/appointments/:id/cancel` que cancele la cita y borre/actualice el evento correspondiente en Google Calendar.
+- [x] Endpoint `GET /api/availability?service_id=&date=` que devuelva, para el servicio elegido, la lista de empleadas capacitadas (`staff_services`) y sus huecos libres ese día, cruzando `staff_schedules`, `staff_schedule_exceptions` y `appointments` ya guardadas (no se usa Google Calendar aquí — ver sección 8.3 de la propuesta de arquitectura).
+- [x] Endpoint `POST /api/appointments` que valide que el huequito sigue libre (evitar condición de carrera de doble reserva — resuelto con un exclusion constraint en Postgres, migración 0002) e inserte la cita. La creación del evento en Google Calendar queda para la Fase 3: por ahora la cita se marca `google_sync_pending = true`.
+- [x] Endpoint `POST /api/appointments/:id/cancel` que cancela la cita (libera el horario automáticamente vía el constraint). Borrar/actualizar el evento de Google Calendar queda para la Fase 3.
 
 ---
 
