@@ -6,6 +6,7 @@ import { getAvailability } from "@/lib/availability";
 import { StepHeader } from "@/components/step-header";
 import { formatLongDate } from "@/lib/format";
 import { contactQueryString } from "@/lib/public/contact";
+import { BookingCalendar } from "./booking-calendar";
 
 export default async function HorarioPage({
   searchParams,
@@ -59,9 +60,10 @@ export default async function HorarioPage({
   const sortedSlots = [...slotMap.entries()].sort(([a], [b]) => (a < b ? -1 : 1));
 
   const contact = contactQueryString({ name, phone, email, birthday });
-  const prevDate = selectedDate.minus({ days: 1 }).toFormat("yyyy-MM-dd");
-  const nextDate = selectedDate.plus({ days: 1 }).toFormat("yyyy-MM-dd");
-  const canGoPrev = selectedDate.startOf("day") > today.startOf("day");
+
+  function dateHref(isoDate: string) {
+    return `/horario?service=${serviceId}&staff=${staffParam}&${contact}&date=${isoDate}`;
+  }
 
   function confirmHref(iso: string, staffId: string) {
     return `/confirmacion?service=${serviceId}&staff=${staffId}&starts_at=${encodeURIComponent(iso)}&${contact}`;
@@ -76,52 +78,30 @@ export default async function HorarioPage({
         backHref={`/empleada?service=${serviceId}&${contact}`}
       />
 
-      <div className="flex items-center justify-between rounded-2xl border border-line bg-white p-2 shadow-sm shadow-brand-100/40">
-        {canGoPrev ? (
-          <Link
-            href={`/horario?service=${serviceId}&staff=${staffParam}&${contact}&date=${prevDate}`}
-            aria-label="Día anterior"
-            className="flex h-9 w-9 items-center justify-center rounded-full text-brand-600 transition hover:bg-brand-100"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Link>
-        ) : (
-          <span className="h-9 w-9" />
-        )}
-        <span className="text-center text-sm font-semibold text-ink">
-          {formatLongDate(selectedDate)}
-        </span>
-        <Link
-          href={`/horario?service=${serviceId}&staff=${staffParam}&${contact}&date=${nextDate}`}
-          aria-label="Día siguiente"
-          className="flex h-9 w-9 items-center justify-center rounded-full text-brand-600 transition hover:bg-brand-100"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </Link>
-      </div>
+      <BookingCalendar selectedDate={selectedDate} today={today} dateHref={dateHref} />
 
-      <div className="mt-5 grid grid-cols-3 gap-2.5">
-        {sortedSlots.map(([iso, who]) => (
-          <Link
-            key={iso}
-            href={confirmHref(iso, who.staffId)}
-            className="rounded-xl border border-line bg-white py-2.5 text-center text-sm font-medium text-ink transition hover:border-brand-400 hover:bg-brand-50"
-          >
-            {DateTime.fromISO(iso).setZone(timezone).toFormat("HH:mm")}
-          </Link>
-        ))}
+      <div className="mt-5">
+        <p className="mb-2 text-sm font-semibold text-ink">{formatLongDate(selectedDate)}</p>
+        {sortedSlots.length === 0 ? (
+          <div className="rounded-2xl border border-line bg-white p-6 text-center text-sm text-ink-soft">
+            Sin horarios disponibles este día.
+            <br />
+            Elige otro en el calendario. 🌸
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-2.5">
+            {sortedSlots.map(([iso, who]) => (
+              <Link
+                key={iso}
+                href={confirmHref(iso, who.staffId)}
+                className="rounded-xl border border-line bg-white py-2.5 text-center text-sm font-medium text-ink transition hover:border-brand-400 hover:bg-brand-50"
+              >
+                {DateTime.fromISO(iso).setZone(timezone).toFormat("HH:mm")}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
-      {sortedSlots.length === 0 && (
-        <div className="mt-6 rounded-2xl border border-line bg-white p-6 text-center text-sm text-ink-soft">
-          Sin horarios disponibles este día.
-          <br />
-          Prueba con otro día. 🌸
-        </div>
-      )}
     </main>
   );
 }
