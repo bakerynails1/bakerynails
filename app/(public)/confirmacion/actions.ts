@@ -15,6 +15,7 @@ const bookingSchema = z.object({
   name: z.string().min(1),
   phone: z.string().min(1),
   email: z.string().email().optional(),
+  birthday: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
 export async function confirmBooking(_prevState: ConfirmState, formData: FormData): Promise<ConfirmState> {
@@ -25,6 +26,7 @@ export async function confirmBooking(_prevState: ConfirmState, formData: FormDat
     name: formData.get("name"),
     phone: formData.get("phone"),
     email: formData.get("email") || undefined,
+    birthday: formData.get("birthday") || undefined,
   });
 
   if (!parsed.success) {
@@ -37,7 +39,7 @@ export async function confirmBooking(_prevState: ConfirmState, formData: FormDat
       serviceId: parsed.data.service_id,
       staffId: parsed.data.staff_id,
       startsAt: parsed.data.starts_at,
-      customer: { name: parsed.data.name, phone: parsed.data.phone, email: parsed.data.email },
+      customer: { name: parsed.data.name, phone: parsed.data.phone, email: parsed.data.email, birthday: parsed.data.birthday },
     });
     appointmentId = appointment.id;
   } catch (error) {

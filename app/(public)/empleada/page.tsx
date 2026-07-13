@@ -2,10 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCapableStaff, getService } from "@/lib/public/catalog";
 import { StepHeader } from "@/components/step-header";
-
-function contactQs(name: string, phone: string, email?: string) {
-  return `name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}${email ? `&email=${encodeURIComponent(email)}` : ""}`;
-}
+import { contactQueryString } from "@/lib/public/contact";
 
 function initials(name: string) {
   return name
@@ -19,17 +16,18 @@ function initials(name: string) {
 export default async function EmpleadaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ service?: string; name?: string; phone?: string; email?: string }>;
+  searchParams: Promise<{ service?: string; name?: string; phone?: string; email?: string; birthday?: string }>;
 }) {
-  const { service: serviceId, name, phone, email } = await searchParams;
+  const { service: serviceId, name, phone, email, birthday } = await searchParams;
   if (!name || !phone) redirect("/");
-  if (!serviceId) redirect("/servicios?" + contactQs(name, phone, email));
+  const contact = contactQueryString({ name, phone, email, birthday });
+  if (!serviceId) redirect("/servicios?" + contact);
 
   const service = await getService(serviceId);
-  if (!service) redirect("/servicios?" + contactQs(name, phone, email));
+  if (!service) redirect("/servicios?" + contact);
 
   const staff = await getCapableStaff(serviceId);
-  const qs = `service=${serviceId}&${contactQs(name, phone, email)}`;
+  const qs = `service=${serviceId}&${contact}`;
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-md px-5 py-8">
@@ -37,7 +35,7 @@ export default async function EmpleadaPage({
         step={2}
         title="Elige a tu artista"
         subtitle={`Para ${service!.name}`}
-        backHref={`/servicios?${contactQs(name, phone, email)}`}
+        backHref={`/servicios?${contact}`}
       />
 
       <div className="space-y-2">

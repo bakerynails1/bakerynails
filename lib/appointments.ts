@@ -22,6 +22,7 @@ export interface CreateAppointmentInput {
     name: string;
     phone?: string;
     email?: string;
+    birthday?: string; // YYYY-MM-DD
   };
 }
 
@@ -30,24 +31,34 @@ async function findOrCreateCustomer(
   businessId: string,
   customer: CreateAppointmentInput["customer"]
 ) {
+  let existing: { id: string; birthday: string | null } | null = null;
+
   if (customer.phone) {
-    const { data: existing, error } = await supabase
+    const { data, error } = await supabase
       .from("customers")
-      .select("id")
+      .select("id, birthday")
       .eq("business_id", businessId)
       .eq("phone", customer.phone)
       .maybeSingle();
     if (error) throw new AppointmentError(error.message, 500);
-    if (existing) return existing.id;
+    existing = data;
   } else if (customer.email) {
-    const { data: existing, error } = await supabase
+    const { data, error } = await supabase
       .from("customers")
-      .select("id")
+      .select("id, birthday")
       .eq("business_id", businessId)
       .eq("email", customer.email)
       .maybeSingle();
     if (error) throw new AppointmentError(error.message, 500);
-    if (existing) return existing.id;
+    existing = data;
+  }
+
+  if (existing) {
+    // cliente que regresa: si no teníamos su cumpleaños y ahora lo dio, lo guardamos.
+    if (!existing.birthday && customer.birthday) {
+      await supabase.from("customers").update({ birthday: customer.birthday }).eq("id", existing.id);
+    }
+    return existing.id;
   }
 
   const { data: created, error: insertError } = await supabase
@@ -57,6 +68,7 @@ async function findOrCreateCustomer(
       name: customer.name,
       phone: customer.phone ?? null,
       email: customer.email ?? null,
+      birthday: customer.birthday ?? null,
     })
     .select("id")
     .single();

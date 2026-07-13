@@ -5,10 +5,7 @@ import { getBusiness, getService, getStaffMember } from "@/lib/public/catalog";
 import { getAvailability } from "@/lib/availability";
 import { StepHeader } from "@/components/step-header";
 import { formatLongDate } from "@/lib/format";
-
-function contactQs(name: string, phone: string, email?: string) {
-  return `name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}${email ? `&email=${encodeURIComponent(email)}` : ""}`;
-}
+import { contactQueryString } from "@/lib/public/contact";
 
 export default async function HorarioPage({
   searchParams,
@@ -20,18 +17,20 @@ export default async function HorarioPage({
     name?: string;
     phone?: string;
     email?: string;
+    birthday?: string;
   }>;
 }) {
-  const { service: serviceId, staff: staffParam, date: dateParam, name, phone, email } = await searchParams;
+  const { service: serviceId, staff: staffParam, date: dateParam, name, phone, email, birthday } = await searchParams;
   if (!name || !phone) redirect("/");
-  if (!serviceId || !staffParam) redirect("/servicios?" + contactQs(name, phone ?? "", email));
+  const contactBase = contactQueryString({ name, phone: phone ?? "", email, birthday });
+  if (!serviceId || !staffParam) redirect("/servicios?" + contactBase);
 
   const service = await getService(serviceId);
-  if (!service) redirect("/servicios?" + contactQs(name, phone, email));
+  if (!service) redirect("/servicios?" + contactBase);
 
   if (staffParam !== "any") {
     const staffMember = await getStaffMember(staffParam);
-    if (!staffMember) redirect(`/empleada?service=${serviceId}&${contactQs(name, phone, email)}`);
+    if (!staffMember) redirect(`/empleada?service=${serviceId}&${contactBase}`);
   }
 
   const business = await getBusiness();
@@ -59,7 +58,7 @@ export default async function HorarioPage({
   }
   const sortedSlots = [...slotMap.entries()].sort(([a], [b]) => (a < b ? -1 : 1));
 
-  const contact = contactQs(name, phone, email);
+  const contact = contactQueryString({ name, phone, email, birthday });
   const prevDate = selectedDate.minus({ days: 1 }).toFormat("yyyy-MM-dd");
   const nextDate = selectedDate.plus({ days: 1 }).toFormat("yyyy-MM-dd");
   const canGoPrev = selectedDate.startOf("day") > today.startOf("day");

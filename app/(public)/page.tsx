@@ -9,8 +9,8 @@ export default async function ReservarInicioPage() {
       </div>
 
       <div className="mt-8 text-center">
-        <h1 className="font-serif text-3xl font-semibold text-ink">¡Hola, hermosa!</h1>
-        <p className="mt-1 text-ink-soft">Agenda tu cita rápido, fácil y bonito 🤍</p>
+        <h1 className="font-serif text-3xl font-semibold text-ink">Bienvenida</h1>
+        <p className="mt-1 text-ink-soft">Agenda tu cita fácil y rápido 🤍</p>
       </div>
 
       <form
@@ -55,6 +55,25 @@ export default async function ReservarInicioPage() {
             className="w-full rounded-xl border border-line bg-brand-50/40 px-4 py-3 text-sm text-ink outline-none transition focus:border-brand-400 focus:bg-white"
           />
         </div>
+
+        <div className="rounded-2xl bg-brand-50 p-4">
+          <p className="text-sm font-medium text-brand-700">🎂 Nos gusta consentirte</p>
+          <p className="mt-0.5 text-xs text-ink-soft">
+            Cuéntanos cuándo es tu cumpleaños — si tu cita cae ese día, tenemos un detalle especial para ti.
+          </p>
+          <div className="mt-2">
+            <label htmlFor="birthday" className="mb-1 block text-sm font-medium text-ink">
+              Cumpleaños <span className="font-normal text-ink-soft">(opcional)</span>
+            </label>
+            <input
+              id="birthday"
+              name="birthday"
+              type="date"
+              className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-brand-400"
+            />
+          </div>
+        </div>
+
         <button type="submit" className={`${btnPrimary} w-full`}>
           Reservar cita
         </button>

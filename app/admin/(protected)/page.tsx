@@ -18,7 +18,7 @@ export default async function AdminHomePage() {
   const [{ data: todaysAppointments }, { count: activeStaff }, { count: activeServices }, { count: pendingSync }] = await Promise.all([
     supabase
       .from("appointments")
-      .select("id, starts_at, status, service:services(name), staff:staff(name), customer:customers(name)")
+      .select("id, starts_at, status, service:services(name), staff:staff(name), customer:customers(name, birthday)")
       .eq("business_id", session.businessId)
       .eq("status", "confirmed")
       .gte("starts_at", today.startOf("day").toUTC().toISO()!)
@@ -83,7 +83,11 @@ export default async function AdminHomePage() {
               const start = DateTime.fromISO(appt.starts_at).setZone(timezone);
               const service = appt.service as unknown as { name: string } | null;
               const staff = appt.staff as unknown as { name: string } | null;
-              const customer = appt.customer as unknown as { name: string } | null;
+              const customer = appt.customer as unknown as { name: string; birthday: string | null } | null;
+              const isBirthday =
+                !!customer?.birthday &&
+                DateTime.fromISO(customer.birthday).month === start.month &&
+                DateTime.fromISO(customer.birthday).day === start.day;
               return (
                 <Card key={appt.id} className="flex items-center justify-between">
                   <div>
@@ -94,7 +98,10 @@ export default async function AdminHomePage() {
                       {staff?.name} · {customer?.name}
                     </p>
                   </div>
-                  <Badge variant="info">Confirmada</Badge>
+                  <div className="flex flex-col items-end gap-1">
+                    <Badge variant="info">Confirmada</Badge>
+                    {isBirthday && <Badge variant="warning">🎂 Cumpleaños</Badge>}
+                  </div>
                 </Card>
               );
             })}

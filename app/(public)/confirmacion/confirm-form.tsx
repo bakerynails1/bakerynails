@@ -13,9 +13,10 @@ interface ConfirmFormProps {
   name: string;
   phone: string;
   email?: string;
+  birthday?: string;
 }
 
-export function ConfirmForm({ serviceId, staffId, startsAt, name, phone, email }: ConfirmFormProps) {
+export function ConfirmForm({ serviceId, staffId, startsAt, name, phone, email, birthday }: ConfirmFormProps) {
   const [state, formAction, pending] = useActionState(confirmBooking, initialState);
 
   return (
@@ -26,6 +27,7 @@ export function ConfirmForm({ serviceId, staffId, startsAt, name, phone, email }
       <input type="hidden" name="name" value={name} />
       <input type="hidden" name="phone" value={phone} />
       {email && <input type="hidden" name="email" value={email} />}
+      {birthday && <input type="hidden" name="birthday" value={birthday} />}
 
       {state.error && (
         <p className="rounded-xl bg-red-50 px-4 py-2 text-sm text-red-600">{state.error}</p>

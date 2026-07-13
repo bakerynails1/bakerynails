@@ -4,13 +4,10 @@ import { getBusiness, getService, getStaffMember } from "@/lib/public/catalog";
 import { ConfirmForm } from "./confirm-form";
 import { StepHeader } from "@/components/step-header";
 import { formatLongDateTime } from "@/lib/format";
+import { contactQueryString } from "@/lib/public/contact";
 
 function formatPrice(cents: number) {
   return (cents / 100).toLocaleString("es-MX", { style: "currency", currency: "MXN" });
-}
-
-function contactQs(name: string, phone: string, email?: string) {
-  return `name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}${email ? `&email=${encodeURIComponent(email)}` : ""}`;
 }
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -32,9 +29,10 @@ export default async function ConfirmacionPage({
     name?: string;
     phone?: string;
     email?: string;
+    birthday?: string;
   }>;
 }) {
-  const { service: serviceId, staff: staffId, starts_at: startsAt, name, phone, email } = await searchParams;
+  const { service: serviceId, staff: staffId, starts_at: startsAt, name, phone, email, birthday } = await searchParams;
 
   if (!serviceId || !staffId || !startsAt || !name || !phone) redirect("/");
 
@@ -49,7 +47,7 @@ export default async function ConfirmacionPage({
       <StepHeader
         step={4}
         title="Confirma tu cita"
-        backHref={`/horario?service=${serviceId}&staff=${staffId}&${contactQs(name, phone, email)}&date=${start.toFormat("yyyy-MM-dd")}`}
+        backHref={`/horario?service=${serviceId}&staff=${staffId}&${contactQueryString({ name, phone, email, birthday })}&date=${start.toFormat("yyyy-MM-dd")}`}
       />
 
       <div className="rounded-3xl border border-line bg-white p-6 shadow-sm shadow-brand-100">
@@ -74,7 +72,7 @@ export default async function ConfirmacionPage({
         </p>
       </div>
 
-      <ConfirmForm serviceId={serviceId} staffId={staffId} startsAt={startsAt} name={name} phone={phone} email={email} />
+      <ConfirmForm serviceId={serviceId} staffId={staffId} startsAt={startsAt} name={name} phone={phone} email={email} birthday={birthday} />
     </main>
   );
 }

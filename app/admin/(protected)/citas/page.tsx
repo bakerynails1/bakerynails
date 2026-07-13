@@ -57,7 +57,7 @@ export default async function CitasPage({
   let query = supabase
     .from("appointments")
     .select(
-      "id, starts_at, ends_at, status, google_sync_pending, service:services(name, price_cents), staff:staff(name), customer:customers(name, phone)"
+      "id, starts_at, ends_at, status, google_sync_pending, service:services(name, price_cents), staff:staff(name), customer:customers(name, phone, birthday)"
     )
     .eq("business_id", session.businessId)
     .gte("starts_at", dayStart.toUTC().toISO()!)
@@ -112,7 +112,11 @@ export default async function CitasPage({
           const end = DateTime.fromISO(appt.ends_at).setZone(timezone);
           const service = appt.service as unknown as { name: string; price_cents: number } | null;
           const staff = appt.staff as unknown as { name: string } | null;
-          const customer = appt.customer as unknown as { name: string; phone: string | null } | null;
+          const customer = appt.customer as unknown as { name: string; phone: string | null; birthday: string | null } | null;
+          const isBirthday =
+            !!customer?.birthday &&
+            DateTime.fromISO(customer.birthday).month === start.month &&
+            DateTime.fromISO(customer.birthday).day === start.day;
 
           return (
             <Card key={appt.id}>
@@ -126,7 +130,10 @@ export default async function CitasPage({
                   </p>
                   {service && <p className="text-sm text-ink-soft">{formatPrice(service.price_cents)}</p>}
                 </div>
-                <Badge variant={STATUS_BADGE[appt.status] ?? "neutral"}>{STATUS_LABELS[appt.status] ?? appt.status}</Badge>
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  <Badge variant={STATUS_BADGE[appt.status] ?? "neutral"}>{STATUS_LABELS[appt.status] ?? appt.status}</Badge>
+                  {isBirthday && <Badge variant="warning">🎂 Cumpleaños</Badge>}
+                </div>
               </div>
 
               {appt.google_sync_pending && (

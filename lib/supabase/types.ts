@@ -149,6 +149,7 @@ export type Database = {
       }
       customers: {
         Row: {
+          birthday: string | null
           business_id: string
           created_at: string
           email: string | null
@@ -157,6 +158,7 @@ export type Database = {
           phone: string | null
         }
         Insert: {
+          birthday?: string | null
           business_id: string
           created_at?: string
           email?: string | null
@@ -165,6 +167,7 @@ export type Database = {
           phone?: string | null
         }
         Update: {
+          birthday?: string | null
           business_id?: string
           created_at?: string
           email?: string | null
