@@ -18,6 +18,7 @@ interface Service {
   duration_minutes: number;
   size: string | null;
   active: boolean;
+  image_url: string | null;
 }
 
 function formatPrice(cents: number) {
@@ -142,8 +143,24 @@ function ServiceRow({
     <>
       <tr className="border-b border-line last:border-0 hover:bg-brand-50/20">
         <td className="px-4 py-2.5 font-medium text-ink">
-          {service.name}
-          {service.size && <span className="ml-1 text-ink-soft">· {service.size}</span>}
+          <div className="flex items-center gap-2.5">
+            {service.image_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={service.image_url} alt="" className="h-9 w-9 shrink-0 rounded-lg object-cover" />
+            ) : (
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-300">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.7" />
+                  <circle cx="8.5" cy="10" r="1.5" fill="currentColor" />
+                  <path d="M4 17l4.5-4 3 2.5L15 11l5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            )}
+            <span>
+              {service.name}
+              {service.size && <span className="ml-1 text-ink-soft">· {service.size}</span>}
+            </span>
+          </div>
         </td>
         <td className="px-2 py-2.5 text-ink">{formatPrice(service.price_cents)}</td>
         <td className="px-2 py-2.5 text-ink-soft">{service.duration_minutes} min</td>

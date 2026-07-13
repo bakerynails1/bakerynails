@@ -20,6 +20,7 @@ interface ServiceFormProps {
     price_cents: number;
     duration_minutes: number;
     size: string | null;
+    image_url: string | null;
   };
 }
 
@@ -66,6 +67,20 @@ export function ServiceForm({ categories, service }: ServiceFormProps) {
           <option value="L">L</option>
           <option value="XL">XL</option>
         </Select>
+      </Field>
+      <Field label={service?.image_url ? "Cambiar foto" : "Foto"} className="min-w-[13rem]">
+        <div className="flex items-center gap-2">
+          {service?.image_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={service.image_url} alt="" className="h-9 w-9 shrink-0 rounded-lg object-cover" />
+          )}
+          <input
+            name="image"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="w-full text-xs text-ink-soft file:mr-2 file:rounded-lg file:border-0 file:bg-brand-100 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-brand-700 hover:file:bg-brand-200"
+          />
+        </div>
       </Field>
       <Button type="submit" variant="primary" pending={pending}>
         {service ? "Guardar" : "Agregar servicio"}

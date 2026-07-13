@@ -17,7 +17,7 @@ export async function getCategoriesWithServices(businessId: string) {
     supabase.from("service_categories").select("id, name, sort_order").eq("business_id", businessId).order("sort_order"),
     supabase
       .from("services")
-      .select("id, category_id, name, price_cents, duration_minutes, size")
+      .select("id, category_id, name, price_cents, duration_minutes, size, image_url")
       .eq("business_id", businessId)
       .eq("active", true)
       .order("name"),

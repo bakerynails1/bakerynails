@@ -9,6 +9,7 @@ interface Service {
   price_cents: number;
   duration_minutes: number;
   size: string | null;
+  image_url: string | null;
 }
 
 interface Category {
@@ -51,9 +52,21 @@ export function CategoryAccordion({ categories, contactQuery }: { categories: Ca
                   <Link
                     key={service.id}
                     href={`/empleada?service=${service.id}&${contactQuery}`}
-                    className="flex items-center justify-between rounded-xl border border-line bg-white p-3.5 transition hover:border-brand-300 hover:bg-brand-50/30"
+                    className="flex items-center gap-3 rounded-xl border border-line bg-white p-3 transition hover:border-brand-300 hover:bg-brand-50/30"
                   >
-                    <div>
+                    {service.image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={service.image_url} alt="" className="h-14 w-14 shrink-0 rounded-xl object-cover" />
+                    ) : (
+                      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-300">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                          <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.7" />
+                          <circle cx="8.5" cy="10" r="1.5" fill="currentColor" />
+                          <path d="M4 17l4.5-4 3 2.5L15 11l5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </span>
+                    )}
+                    <div className="min-w-0 flex-1">
                       <p className="font-medium text-ink">
                         {service.name}
                         {service.size ? <span className="text-ink-soft"> · {service.size}</span> : ""}

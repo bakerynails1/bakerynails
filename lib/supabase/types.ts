@@ -221,6 +221,7 @@ export type Database = {
           category_id: string
           duration_minutes: number
           id: string
+          image_url: string | null
           name: string
           price_cents: number
           size: string | null
@@ -231,6 +232,7 @@ export type Database = {
           category_id: string
           duration_minutes: number
           id?: string
+          image_url?: string | null
           name: string
           price_cents: number
           size?: string | null
@@ -241,6 +243,7 @@ export type Database = {
           category_id?: string
           duration_minutes?: number
           id?: string
+          image_url?: string | null
           name?: string
           price_cents?: number
           size?: string | null

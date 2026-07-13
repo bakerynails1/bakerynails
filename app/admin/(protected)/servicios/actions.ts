@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireBusinessSession } from "@/lib/admin/auth";
 import { createClient } from "@/lib/supabase/server";
+import { uploadServiceImage, UploadError } from "@/lib/admin/upload";
 
 export interface ServiceFormState {
   error?: string;
@@ -61,6 +62,14 @@ export async function createService(_prevState: ServiceFormState, formData: Form
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
+  let imageUrl: string | null = null;
+  try {
+    imageUrl = await uploadServiceImage(session.businessId, formData.get("image"));
+  } catch (e) {
+    if (e instanceof UploadError) return { error: e.message };
+    throw e;
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.from("services").insert({
     business_id: session.businessId,
@@ -69,6 +78,7 @@ export async function createService(_prevState: ServiceFormState, formData: Form
     price_cents: priceCents,
     duration_minutes: parsed.data.duration_minutes,
     size: parsed.data.size ?? null,
+    image_url: imageUrl,
   });
   if (error) return { error: error.message };
 
@@ -77,7 +87,7 @@ export async function createService(_prevState: ServiceFormState, formData: Form
 }
 
 export async function updateService(_prevState: ServiceFormState, formData: FormData): Promise<ServiceFormState> {
-  await requireBusinessSession();
+  const session = await requireBusinessSession();
   const id = formData.get("id");
   if (typeof id !== "string") return { error: "id inválido" };
 
@@ -92,6 +102,14 @@ export async function updateService(_prevState: ServiceFormState, formData: Form
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
+  let imageUrl: string | null = null;
+  try {
+    imageUrl = await uploadServiceImage(session.businessId, formData.get("image"));
+  } catch (e) {
+    if (e instanceof UploadError) return { error: e.message };
+    throw e;
+  }
+
   const supabase = await createClient();
   const { error } = await supabase
     .from("services")
@@ -101,6 +119,8 @@ export async function updateService(_prevState: ServiceFormState, formData: Form
       price_cents: priceCents,
       duration_minutes: parsed.data.duration_minutes,
       size: parsed.data.size ?? null,
+      // solo reemplaza la foto si subieron una nueva
+      ...(imageUrl ? { image_url: imageUrl } : {}),
     })
     .eq("id", id);
   if (error) return { error: error.message };

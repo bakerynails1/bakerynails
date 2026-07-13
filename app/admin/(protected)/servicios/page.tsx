@@ -17,7 +17,7 @@ export default async function ServiciosPage() {
       .order("sort_order"),
     supabase
       .from("services")
-      .select("id, category_id, name, price_cents, duration_minutes, size, active")
+      .select("id, category_id, name, price_cents, duration_minutes, size, active, image_url")
       .eq("business_id", session.businessId)
       .order("name"),
   ]);
